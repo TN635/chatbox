@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Project</title>
+    <style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: grey;
+        color: aliceblue;
+    }
+    h1 {
+        font-family: 'Roboto', sans-serif;
+        text-align: center;
+        color: darkblue;
+    }
+    h1:hover{
+        color: lime;
+    }
+
+    .chatbox {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 20px;
+        background: black;
+        border-radius: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.9);
+    }
+
+    .chatbox input[type="text"] {
+        width: 78%;
+        padding: 10px;
+        margin-right: 5px;
+        background-color: lightyellow;
+        color: black;
+        border-radius: 12px;
+        font-size: 16px;
+        border: 1px solid black;
+    }
+
+    .chatbox button {
+        padding: 10px 15px;
+        background-color: teal;
+        color: aliceblue;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .chatbox button:hover {
+        background-color: green;
+    }
+
+    .chatbox .messages {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        padding-right: 10px;
+        scrollbar-width: thin;
+        scrollbar-color: green transparent;
+    }
+
+    .chatbox .messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chatbox .messages::-webkit-scrollbar-thumb {
+        background-color: aliceblue;
+        border-radius: 5px;
+    }
+
+    .message {
+        margin: 10px 0;
+        line-height: 1.5;
+    }
+
+    .user {
+        text-align: right;
+    }
+
+    .user .message-content {
+        display: inline-block;
+        background-color: green;
+        color: aliceblue;
+        padding: 10px;
+        border-radius: 10px 10px 0 10px;
+        max-width: 70%;
+    }
+
+    .bot {
+        text-align: left;
+    }
+
+    .bot .message-content {
+        display: inline-block;
+        background-color: blue;
+        color: aliceblue;
+        padding: 10px;
+        border-radius: 10px 10px 10px 0;
+        max-width: 70%;
+    }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Chatbot!</h1>
+    <div class="chatbox">
+        <div class="messages" id="messages"></div>
+        <input type="text" id="userInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('userInput').value;
+            const messages = document.getElementById('messages');
+
+            if (userInput.trim() === '') return;
+
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.innerText = userInput;
+            messages.appendChild(userMessage);
+
+            fetch('/get', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ msg: userInput })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'message bot';
+                    botMessage.innerText = data.response;
+                    messages.appendChild(botMessage);
+                    messages.scrollTop = messages.scrollHeight;
+                });
+
+            document.getElementById('userInput').value = '';
+        }
+    </script>
+</body>
+</html>
